@@ -1,0 +1,22 @@
+[server]
+headless = true
+
+[theme]
+# Cores primárias (use códigos hexadecimais)
+primaryColor = "#262730"  # Exemplo de cor escura para a barra lateral e botões ativos
+secondaryColor = "#FF4B4B" # Exemplo de cor vermelha para destaque
+backgroundColor = "#FFFFFF" # Cor de fundo principal
+textColor = "#262730" # Cor do texto principal
+font = "sans serif" # Fonte para a aplicação (ex: "sans serif", "serif", "monospace")
+
+# Você pode adicionar mais customizações de cor conforme necessário.
+# Por exemplo:
+# [theme.palette]
+# primary = "#262730"
+# secondary = "#FF4B4B"
+# ... outras cores específicas
+
+# Para definir um título que aparece na aba do navegador e no cabeçalho da aplicação
+[session_state]
+# Nome da aplicação que aparece no topo
+title = "Minha Aplicação Streamlit"
