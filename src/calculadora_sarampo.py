@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[ ]:
+
+
 import streamlit as st
 from streamlit_calendar import calendar
 from datetime import datetime, date, timedelta
@@ -52,7 +58,7 @@ def generate_calendar_events(data_inicio_exantema_str):
                                  "color": "#ffbefc",
                                  "textColor": "#000000",
                                  "allDay": True, })
-    
+
     # Período de exposição: 21 dias antes até 7 dias antes
     for delta in range(-21, -6):
         data_evento = data_inicio + timedelta(days=delta)
@@ -62,7 +68,7 @@ def generate_calendar_events(data_inicio_exantema_str):
                                  "color": "#ceb7ff",
                                  "textColor": "#000000",
                                  "allDay": True, })
-    
+
     # Relacionado à vacina: 14 dias antes até 7 dias antes
     for delta in range(-14, -6):
         data_evento = data_inicio + timedelta(days=delta)
@@ -72,7 +78,7 @@ def generate_calendar_events(data_inicio_exantema_str):
                                  "color": "#ffe0c2",
                                  "textColor": "#000000",
                                  "allDay": True, })
-    
+
     # Presença de casos secundários: 0 a 25 dias depois
     for delta in range(0, 26):
         data_evento = data_inicio + timedelta(days=delta)
@@ -82,7 +88,7 @@ def generate_calendar_events(data_inicio_exantema_str):
                                  "color": "#cdf4d3",
                                  "textColor": "#000000",
                                  "allDay": True, })
-    
+
     # Amostra soro ideal: 0 a 31 dias depois
     for delta in range(0, 31):
         data_evento = data_inicio + timedelta(days=delta)
@@ -92,7 +98,7 @@ def generate_calendar_events(data_inicio_exantema_str):
                                  "color": "#ffc7c2",
                                  "textColor": "#000000",
                                  "allDay": True, })
-    
+
     # Amostra nasal ideal: 0 a 14 dias depois
     for delta in range(0, 15):
         data_evento = data_inicio + timedelta(days=delta)
@@ -102,7 +108,7 @@ def generate_calendar_events(data_inicio_exantema_str):
                                  "color": "#c2e5ff",
                                  "textColor": "#000000",
                                  "allDay": True, })
-    
+
     # Amostra urina ideal: 0 a 10 dias depois
     for delta in range(0, 11):
         data_evento = data_inicio + timedelta(days=delta)
@@ -112,7 +118,7 @@ def generate_calendar_events(data_inicio_exantema_str):
                                  "color": "#ffffcc",
                                  "textColor": "#000000",
                                  "allDay": True, })
-    
+
     # Evento principal da notificação
     calendar_events.append({ "title": "🤒 Início do exantema",
                              "start": data_inicio.strftime("%Y-%m-%d"),
@@ -126,7 +132,7 @@ def get_period_details(data_inicio_exantema_str):
     """Retorna uma lista de dicionários com os detalhes de cada período."""
     if not data_inicio_exantema_str:
         return []
-    
+
     try:
         data_inicio = datetime.strptime(data_inicio_exantema_str, "%d/%m/%Y")
     except ValueError:
@@ -147,7 +153,7 @@ def get_period_details(data_inicio_exantema_str):
 
     for period_name, config in period_colors.items():
         start_day, end_day = config["days"]
-        
+
         # Lida com o caso específico de "Início do exantema" que é um único dia
         if period_name == "🤒 Início do exantema":
             start_date = data_inicio
@@ -155,14 +161,14 @@ def get_period_details(data_inicio_exantema_str):
         else:
             start_date = data_inicio + timedelta(days=start_day)
             end_date = data_inicio + timedelta(days=end_day)
-        
+
         period_data.append({
             "nome": period_name,
             "data_inicio": start_date.strftime("%d/%m/%Y"),
             "data_fim": end_date.strftime("%d/%m/%Y"),
             "cor": config["color"]
         })
-    
+
     return period_data
 
 def render_calendar(selected_idx, df):
@@ -179,7 +185,7 @@ def render_calendar(selected_idx, df):
         return
 
     calendar_events = generate_calendar_events(date_str)
-    
+
     if not calendar_events: # Se generate_calendar_events retornou lista vazia (erro de data)
         return
 
@@ -193,9 +199,9 @@ def render_calendar(selected_idx, df):
         "initialDate": datetime.strptime(date_str, "%d/%m/%Y").strftime("%Y-%m-%d"),
         "height": 800,
     }
-    
+
     st.session_state.calendar_update_counter += 1
-    
+
     calendar(events=calendar_events, options=calendar_options, key=f"calendar_{selected_idx}_{st.session_state.calendar_update_counter}")
 
 # --- Tabs ---
@@ -269,7 +275,7 @@ with tab2:
             st.markdown("### Gerenciar notificações")
 
             df = st.session_state.df_notificacoes.reset_index(drop=True)
-            
+
             options_indices = [None] + df.index.tolist()
             labels_map = {
                 idx: f'{df.at[idx, "Número de notificação"]} — {df.at[idx, "Data de início do exantema"]}'
@@ -292,7 +298,7 @@ with tab2:
                         st.session_state.df_notificacoes.reset_index(drop=True, inplace=True)
                         st.success("Notificação removida!")
                         st.rerun() 
-                
+
                 with col_editar:
                     with st.form(f"form_edicao_{selected_idx}"):
                         row = df.loc[selected_idx]
@@ -400,24 +406,24 @@ with tab4:
 # ---------------- ABA 5: Linha do tempo ----------------
 with tab5:
     st.markdown("### Linha do tempo")
-    
+
     if st.session_state.df_notificacoes.empty:
         st.info("Nenhuma notificação registrada ainda.")
     else:
         df_plot_base = st.session_state.df_notificacoes.copy()
         df_plot_base['Data de início do exantema'] = pd.to_datetime(df_plot_base['Data de início do exantema'], format='%d/%m/%Y', errors='coerce')
-        
+
         df_plot_base['ID Genérico'] = range(1, len(df_plot_base) + 1)
-        
+
         period_colors = {
-            "🗣️ Período de transmissibilidade": "#ffbefc", # Ciano
-            "🫂 Período de exposição": "#ceb7ff",          # Amarelo
-            "💉 Relacionado à vacina": "#ffe0c2",          # Verde
-            "🦠 Presença de casos secundários": "#cdf4d3", # Laranja
-            "🩸 Amostral ideal soro": "#ffc7c2",           # Vermelho
-            "👃 Amostral ideal nasal, faríngica ou nasofaríngica": "#c2e5ff", # Roxo
-            "💧 Amostral ideal urina": "#fbf8aa",          # Amarelo claro
-            "🤒 Início do exantema": "#333333"           # Preto
+            "🗣️ Período de transmissibilidade": "#F849C1",
+            "🫂 Período de exposição": "#874FFF",
+            "💉 Relacionado à vacina": "#FF9E42",
+            "🦠 Presença de casos secundários": "#66D575",
+            "🩸 Amostral ideal soro": "#F24822",
+            "👃 Amostral ideal nasal, faríngica ou nasofaríngica": "#3DADFF",
+            "💧 Amostral ideal urina": "#FFC943",
+            "🤒 Início do exantema": "#333333"
         }
 
         plot_data = []
@@ -431,24 +437,24 @@ with tab5:
 
             for event in events_for_notification:
                 start_date = datetime.strptime(event['start'], "%Y-%m-%d")
-                
+
                 plot_data.append({
                     "ID Genérico": id_generico,
                     "Data": start_date,
                     "Período": event['title'],
                     "Cor": period_colors.get(event['title'], '#cccccc'),
                     "Notificação": notificacao_num,
-                    "Opacidade": 0.7 
+                    "Opacidade": 0.7
                 })
 
         if plot_data:
             df_plot_events = pd.DataFrame(plot_data)
-            
+
             notification_options_dict = {
                 row['ID Genérico']: f'{row["Número de notificação"]} ({row["Data de início do exantema"].strftime("%d/%m/%Y")})'
                 for index, row in df_plot_base.iterrows()
             }
-            
+
             selected_notification_ids = st.multiselect(
                 "Selecione as notificações para visualizar os períodos:",
                 options=list(notification_options_dict.keys()),
@@ -460,7 +466,7 @@ with tab5:
                 df_filtered_plot = df_plot_events[
                     df_plot_events['ID Genérico'].isin(selected_notification_ids)
                 ]
-                
+
                 fig = go.Figure()
 
                 default_visible_periods = [
@@ -472,7 +478,7 @@ with tab5:
 
                 for period in period_colors.keys():
                     df_period = df_filtered_plot[df_filtered_plot['Período'] == period]
-                    
+
                     if not df_period.empty:
                         fig.add_trace(go.Scatter(
                             x=df_period['Data'],
@@ -492,9 +498,9 @@ with tab5:
                             ),
                             visible=True if period in default_visible_periods else 'legendonly'
                         ))
-                
+
                 fig.update_layout(
-                    title='Períodos de Eventos por Notificação',
+                    #title='Períodos de Eventos por Notificação',
                     xaxis_title='Data',
                     yaxis_title='Número de notificação',
                     yaxis=dict(
@@ -557,7 +563,7 @@ with tab3:
         if selected_idx_for_details is not None:
             row = df_details.loc[selected_idx_for_details]
             data_inicio_exantema_str = row["Data de início do exantema"]
-            
+
             period_details_list = get_period_details(data_inicio_exantema_str)
 
             if period_details_list:
@@ -565,7 +571,7 @@ with tab3:
                 # Por exemplo, 2 colunas para telas mais largas, 1 para mais estreitas.
                 num_cols = 2
                 cols = st.columns(num_cols)
-                
+
                 for i, period_info in enumerate(period_details_list):
                     with cols[i % num_cols]: # Distribui os cards pelas colunas
                         st.markdown(f"""
@@ -594,3 +600,10 @@ with tab3:
     except Exception as e:
         st.warning(f"Não foi possível carregar a logo de rodapé na Aba Detalhes dos Períodos. Erro: {e}")
     # --- FIM DA INSERÇÃO DO RODAPÉ DA ABA 5 ---
+
+
+# In[ ]:
+
+
+
+
