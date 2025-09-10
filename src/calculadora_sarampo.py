@@ -143,11 +143,11 @@ def get_period_details(data_inicio_exantema_str):
     period_colors = {
         "🗣️ Período de transmissibilidade": {"color": "#ffbefc", "days": (-6, 4)},
         "🫂 Período de exposição": {"color": "#ceb7ff", "days": (-21, -7)},
-        "💉 Relacionado à vacina": {"color": "#ffe0c2", "days": (-14, -7)},
+        "💉 Relacionado à vacina": {"color": "#ffe0c2", "days": (-14, -6)}, # Corrigido para ser consistente com o calendário
         "🦠 Presença de casos secundários": {"color": "#cdf4d3", "days": (0, 25)},
-        "🩸 Amostral ideal soro": {"color": "#ffc7c2", "days": (0, 30)},
+        "🩸 Amostral ideal soro": {"color": "#ffc7c2", "days": (0, 30)}, # Corrigido para ser consistente com o calendário
         "👃 Amostral ideal nasal, faríngica ou nasofaríngica": {"color": "#c2e5ff", "days": (0, 14)},
-        "💧 Amostral ideal urina": {"color": "#fbf8aa", "days": (0, 10)},
+        "💧 Amostral ideal urina": {"color": "#ffffcc", "days": (0, 10)}, # Corrigido para ser consistente com o calendário e a cor do calendário
         "🤒 Início do exantema": {"color": "#b2b2b2", "days": (0, 0)}
     }
 
@@ -533,9 +533,21 @@ with tab5:
     # --- FIM DA INSERÇÃO DO RODAPÉ DA ABA 4 ---
 
 
-# --- NOVA ABA 3: Períodos de investigação ---
+# --- ABA 3: Períodos de investigação ---
 with tab3:
     st.markdown("### Períodos de investigação")
+
+    # Dicionário de descrições para os cards
+    period_descriptions = {
+        "🗣️ Período de transmissibilidade": "Investigue: (1) locais visitados, (2) visitas recebidas, (3) rotas e tipo de transporte utilizado, (4) localize as pessoas com quem você esteve em contato, (5) vacinar contatos em risco de contágio.",
+        "🫂 Período de exposição": "Investigue: (1) contato com pessoas com febre ou erupção cutânea, (2) lugares visitados, (3) visitas recebidas, (4) rotas e tipo de transporte utilizado, e (5) história e data da vacinação contra o sarampo.",
+        "💉 Relacionado à vacina": "Critérios de classificação: (1) paciente com erupção cutânea, com ou sem febre, sem tosse ou outros sintomas respiratórios relacionados à erupção cutânea; (2) a erupção começou 7 a 14 dias após a vacinação contendo o vírus do sarampo; (3) a amostra de sangue contendo anticorpos IgM específicos foi obtida entre 8 e 56 dias após a vacinação; (4) após investigação exaustiva, nenhum caso secundário foi identificado; (5) a investigação de campo e laboratório não pôde estabelecer outras causas, ou o genótipo A foi isolado do caso suspeito, sendo este o único relacionado à vacina.",
+        "🦠 Presença de casos secundários": "Investigue de 7 dias após o primeiro dia de transferibilidade até 21 dias após o último dia de transferibilidade: (1) vigilância e monitoramento completo dos contatos diretos até o final deste período; e (2) identifique todos os contatos que começam com: febre, irritação na pele, adenopatia, tosse, coriza ou conjuntivite.",
+        "🩸 Amostral ideal soro": "Amostras de soro devem ser obtidas no primeiro contato com o caso, preferencialmente no período que vai do início do exantema até 30 dias depois.",
+        "👃 Amostral ideal nasal, faríngica ou nasofaríngica": "O momento ideal para obtenção de amostras nasais, faríngeas ou nasofaríngeas é em até 7 dias após o aparecimento do rash, mas podem ser obtidas em até 14 dias após o aparecimento do rash.",
+        "💧 Amostral ideal urina": "O intervalo de tempo recomendado para a obtenção das amostras de urina é de 7 dias após o aparecimento da erupção, mas podem ser obtidas em até 10 dias após o aparecimento da erupção.",
+        "🤒 Início do exantema": "Data em que a erupção cutânea (exantema) apareceu no paciente."
+    }
 
     if st.session_state.df_notificacoes.empty:
         st.info("Nenhuma notificação registrada ainda.")
@@ -564,42 +576,50 @@ with tab3:
             row = df_details.loc[selected_idx_for_details]
             data_inicio_exantema_str = row["Data de início do exantema"]
 
-            period_details_list = get_period_details(data_inicio_exantema_str)
+            period_details_list = get_period_details(data_inicio_exantema_str) # Certifique-se que esta função está definida e retorna os dados corretamente
 
             if period_details_list:
-                # Cria colunas para organizar os cards. Ajuste o número de colunas conforme necessário.
-                # Por exemplo, 2 colunas para telas mais largas, 1 para mais estreitas.
-                num_cols = 2
-                cols = st.columns(num_cols)
+                # Cria um container para garantir que todos os cards tenham a mesma altura
+                with st.container():
+                    # Cria colunas para organizar os cards.
+                    num_cols = 2
+                    cols = st.columns(num_cols)
 
-                for i, period_info in enumerate(period_details_list):
-                    with cols[i % num_cols]: # Distribui os cards pelas colunas
-                        st.markdown(f"""
-                        <div style="
-                            background-color: {period_info['cor']};
-                            color: {'#000000' if period_info['cor'] in ['#AAFFFF', '#FFFF59', '#ff9900', '#ffffcc'] else '#000000'};
-                            padding: 15px;
-                            border-radius: 10px;
-                            margin-bottom: 10px;
-                            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-                        ">
-                            <h5 style="margin-top: 0;">{period_info['nome']}</h5>
-                            <p style="margin-bottom: 5px;"><strong>Início:</strong> {period_info['data_inicio']}</p>
-                            <p><strong>Fim:</strong> {period_info['data_fim']}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
+                    for i, period_info in enumerate(period_details_list):
+                        with cols[i % num_cols]: # Distribui os cards pelas colunas
+                            st.markdown(f"""
+                            <div style="
+                                background-color: {period_info['cor']};
+                                color: #000000;
+                                padding: 15px;
+                                border-radius: 10px;
+                                margin-bottom: 10px;
+                                box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+                                height: 200px; /* Define uma altura fixa para todos os cards */
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: space-between; /* Distribui o conteúdo verticalmente */
+                            ">
+                                <h5 style="margin-top: 0;">{period_info['nome']}</h5>
+                                <div style="display: flex; justify-content: space-between; gap: 5px;">
+                                    <p style="margin-bottom: 5px; flex: 1;"><strong>Início:</strong> {period_info['data_inicio']}</p>
+                                    <p style="margin-bottom: 5px; flex: 1;"><strong>Fim:</strong> {period_info['data_fim']}</p>
+                                </div>
+                                <p style="font-size: 0.8rem; margin-top: 6px; font-style: italic; flex-grow: 1;">{period_descriptions.get(period_info['nome'], '')}</p>
+                            </div>
+                            """, unsafe_allow_html=True)
             else:
                 st.info("Não foi possível obter os detalhes dos períodos para esta notificação.")
         else:
             st.info("Por favor, selecione uma notificação para visualizar os detalhes dos períodos.")
 
-    # --- INSERÇÃO DO RODAPÉ DA ABA 5 ---
+    # --- INSERÇÃO DO RODAPÉ DA ABA 3 ---
     st.markdown("---")
     try:
         st.image(logo_url, width=100)
     except Exception as e:
         st.warning(f"Não foi possível carregar a logo de rodapé na Aba Detalhes dos Períodos. Erro: {e}")
-    # --- FIM DA INSERÇÃO DO RODAPÉ DA ABA 5 ---
+    # --- FIM DA INSERÇÃO DO RODAPÉ DA ABA 3 ---
 
 
 # In[ ]:
