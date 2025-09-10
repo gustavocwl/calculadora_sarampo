@@ -3,7 +3,7 @@ headless = true
 
 [theme]
 # Cores primárias (use códigos hexadecimais)
-primaryColor = "#262730"  # Exemplo de cor escura para a barra lateral e botões ativos
+primaryColor = "#1351B4"  # Exemplo de cor escura para a barra lateral e botões ativos
 secondaryColor = "#1351B4" # Exemplo de cor vermelha para destaque
 backgroundColor = "#FFFFFF" # Cor de fundo principal
 textColor = "#262730" # Cor do texto principal
