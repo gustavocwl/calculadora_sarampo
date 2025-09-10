@@ -4,7 +4,7 @@ headless = true
 [theme]
 # Cores primárias (use códigos hexadecimais)
 primaryColor = "#262730"  # Exemplo de cor escura para a barra lateral e botões ativos
-secondaryColor = "#FF4B4B" # Exemplo de cor vermelha para destaque
+secondaryColor = "#1351B4" # Exemplo de cor vermelha para destaque
 backgroundColor = "#FFFFFF" # Cor de fundo principal
 textColor = "#262730" # Cor do texto principal
 font = "sans serif" # Fonte para a aplicação (ex: "sans serif", "serif", "monospace")
