@@ -423,7 +423,7 @@ with tab5:
             "🩸 Amostral ideal soro": "#F24822",
             "👃 Amostral ideal nasal, faríngica ou nasofaríngica": "#3DADFF",
             "💧 Amostral ideal urina": "#FFC943",
-            "🤒 Início do exantema": "#333333"
+            "🤒 Início do exantema": "#111111"
         }
 
         plot_data = []
