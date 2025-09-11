@@ -5,7 +5,7 @@ headless=true
 primaryColor="#1351b4"
 base="light"
 secondaryColor="#1351B4"
-backgroundColor="#FFFFFF"
+backgroundColor="#FDFDFD"
 textColor="#262730"
 font="sans serif"
 
